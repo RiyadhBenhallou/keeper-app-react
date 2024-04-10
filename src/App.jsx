@@ -50,11 +50,11 @@ const App = () => {
         console.error('an error happened while fetching data after deletion', error)
       }
       console.log("deleted successfully")
-      
+      setInnerLoading(false)
     } catch (error) {
       console.error("An error happened while deleting a note", error);
     }
-    setInnerLoading(false)
+    
   };
 
   if (loading) return <div className="loading">Loading...</div>;
