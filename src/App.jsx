@@ -6,7 +6,7 @@ import Note from "./Note";
 import CreateArea from "./CreateArea";
 import "./App.css";
 
-const apiUrl = "https://ba073390-db6a-4e83-8503-fda9317b6a3b-00-z0i1zyyqycou.riker.replit.dev:3000";
+const apiUrl = "https://keeper-app-backend-98dn.onrender.com";
 
 
 const App = () => {
