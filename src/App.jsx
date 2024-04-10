@@ -12,6 +12,7 @@ const apiUrl = "https://keeper-app-backend-98dn.onrender.com";
 const App = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [innerLoading, setInnerLoading] = useState(false);
 
   useEffect(() => {
     const getNotes = async () => {
@@ -24,23 +25,36 @@ const App = () => {
 
   const addNote = async (newNote) => {
     try {
-      setNotes([...notes, newNote]);
+      setInnerLoading(true)
       await axios.post(apiUrl + "/api/notes", newNote);
+      try {
+        const { data } = await axios.get(apiUrl + "/api/notes");
+        setNotes(data);
+      } catch(error) {
+        console.error('an error happened while fetching data after deletion', error)
+      }
+      setInnerLoading(false)
     } catch (error) {
       console.error("An error happened while creating a new note", error);
-      setNotes(notes.filter((note) => note !== newNote));
     }
   };
 
   const deleteNote = async (id) => {
     try {
-      setNotes(notes.filter((note) => note._id !== id));
+      setInnerLoading(true)
       await axios.delete(apiUrl + "/api/delete/" + id);
+      try {
+        const { data } = await axios.get(apiUrl + "/api/notes");
+        setNotes(data);
+      } catch(error) {
+        console.error('an error happened while fetching data after deletion', error)
+      }
+      console.log("deleted successfully")
+      
     } catch (error) {
       console.error("An error happened while deleting a note", error);
-      const data = await fetchNotes();
-      setNotes(data);
     }
+    setInnerLoading(false)
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -49,7 +63,7 @@ const App = () => {
     <div>
       <Header />
       <CreateArea onAdd={addNote} />
-      {notes.map((noteItem, i) => (
+      {innerLoading ? <div className="loading2">Loading...</div> : notes.map((noteItem, i) => (
         <Note
           key={noteItem._id || i}
           id={noteItem._id}
