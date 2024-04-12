@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Header from "./Header";
-import Footer from "./Footer";
-import Note from "./Note";
-import CreateArea from "./CreateArea";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Note from "./components/Note";
+import CreateArea from "./components/CreateArea";
+import useFetchNotes from "./hooks/useFetchNotes.js"
+import useAddNotes from "./hooks/useAddNotes.js"
+import useDeleteNotes from "./hooks/useDeleteNotes.js"
 import "./App.css";
 
-const apiUrl = "https://keeper-app-backend-98dn.onrender.com";
+
 
 
 const App = () => {
@@ -14,48 +16,15 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [innerLoading, setInnerLoading] = useState(false);
 
-  useEffect(() => {
-    const getNotes = async () => {
-      const { data } = await axios.get(apiUrl + "/api/notes");
-      setNotes(data);
-      setLoading(false);
-    };
-    getNotes();
-  }, []);
+  const getNotes = useFetchNotes(setNotes, setLoading)
 
-  const addNote = async (newNote) => {
-    try {
-      setInnerLoading(true)
-      await axios.post(apiUrl + "/api/notes", newNote);
-      try {
-        const { data } = await axios.get(apiUrl + "/api/notes");
-        setNotes(data);
-      } catch(error) {
-        console.error('an error happened while fetching data after deletion', error)
-      }
-      setInnerLoading(false)
-    } catch (error) {
-      console.error("An error happened while creating a new note", error);
-    }
-  };
+  const addNote = useAddNotes(setInnerLoading, getNotes)
 
-  const deleteNote = async (id) => {
-    try {
-      setInnerLoading(true)
-      await axios.delete(apiUrl + "/api/delete/" + id);
-      try {
-        const { data } = await axios.get(apiUrl + "/api/notes");
-        setNotes(data);
-      } catch(error) {
-        console.error('an error happened while fetching data after deletion', error)
-      }
-      console.log("deleted successfully")
-      setInnerLoading(false)
-    } catch (error) {
-      console.error("An error happened while deleting a note", error);
-    }
-    
-  };
+  const deleteNote = useDeleteNotes(setInnerLoading, getNotes)
+
+
+
+
 
   if (loading) return <div className="loading">Loading...</div>;
 
